@@ -18,7 +18,7 @@ var carRe = regexp.MustCompile(`<div class="m-btn pink" data-v-8b1eac0c>([^8b1ea
 var houseRe = regexp.MustCompile(`<div class="m-btn pink" data-v-8b1eac0c>([^8b1eac0c]+车)</div>`)
 var jiguanRe = regexp.MustCompile(`<div class="m-btn pink" data-v-8b1eac0c>籍贯:([^>]+)</div>`)
 var educationRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>月收入:[^<]+</div>(<div class="m-btn purple" data-v-8b1eac0c>([^<]+)</div>){2}`)
-var occupationRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>月收入:[^<]+</div>(<div class="m-btn purple" data-v-8b1eac0c>([^<]+)</div>){1}`)
+var occupationRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>月收入:[^<]+</div>(<div class="m-btn purple" data-v-8b1eac0c>([^<]+)</div>)`)
 
 func ParseProfile(contents []byte, gender string, name string) engine.ParseResult {
 	profile := model.Profile{}

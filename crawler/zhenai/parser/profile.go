@@ -17,31 +17,41 @@ var incomeRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>月
 var carRe = regexp.MustCompile(`<div class="m-btn pink" data-v-8b1eac0c>([^8b1eac0c]+房)</div>`)
 var houseRe = regexp.MustCompile(`<div class="m-btn pink" data-v-8b1eac0c>([^8b1eac0c]+车)</div>`)
 var jiguanRe = regexp.MustCompile(`<div class="m-btn pink" data-v-8b1eac0c>籍贯:([^>]+)</div>`)
+var educationRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>月收入:[^<]+</div>(<div class="m-btn purple" data-v-8b1eac0c>([^<]+)</div>){2}`)
+var occupationRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>月收入:[^<]+</div>(<div class="m-btn purple" data-v-8b1eac0c>([^<]+)</div>){1}`)
 
 func ParseProfile(contents []byte, gender string, name string) engine.ParseResult {
 	profile := model.Profile{}
 	profile.Name = name
 	profile.Gender = gender
 
-	profile.Marriage = extractString(contents, marriageRe)
-	age, err := strconv.Atoi(extractString(contents, ageRe))
+	profile.Marriage = extractString(contents, marriageRe, 1)
+	age, err := strconv.Atoi(extractString(contents, ageRe, 1))
 	if err == nil {
 		profile.Age = age
 	}
-	height, err := strconv.Atoi(extractString(contents, heightRe))
+	height, err := strconv.Atoi(extractString(contents, heightRe, 1))
 	if err == nil {
 		profile.Height = height
 	}
-	weight, err := strconv.Atoi(extractString(contents, weightRe))
+	weight, err := strconv.Atoi(extractString(contents, weightRe, 1))
 	if err == nil {
 		profile.Weight = weight
 	}
 
-	profile.Xinzuo = extractString(contents, xinzuoRe)
-	profile.Income = extractString(contents, incomeRe)
-	profile.Car = extractString(contents, carRe)
-	profile.House = extractString(contents, houseRe)
-	profile.Jiguan = extractString(contents, jiguanRe)
+	profile.Xinzuo = extractString(contents, xinzuoRe, 1)
+	profile.Income = extractString(contents, incomeRe, 1)
+	profile.Car = extractString(contents, carRe, 1)
+	profile.House = extractString(contents, houseRe, 1)
+	profile.Jiguan = extractString(contents, jiguanRe, 1)
+
+	education := extractString(contents, educationRe, 2)
+	if education == "" {
+		profile.Education = extractString(contents, occupationRe, 2)
+	} else {
+		profile.Education = education
+		profile.Occupation = extractString(contents, occupationRe, 2)
+	}
 
 	result := engine.ParseResult{
 		Items: []interface{}{profile},
@@ -49,10 +59,10 @@ func ParseProfile(contents []byte, gender string, name string) engine.ParseResul
 	return result
 }
 
-func extractString(contents []byte, re *regexp.Regexp) string {
+func extractString(contents []byte, re *regexp.Regexp, n int) string {
 	match := re.FindSubmatch(contents)
-	if len(match) > 1 {
-		return string(match[1])
+	if len(match) > n {
+		return string(match[n])
 	}
 
 	return ""

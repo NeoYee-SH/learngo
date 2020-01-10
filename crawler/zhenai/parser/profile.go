@@ -8,34 +8,52 @@ import (
 	"github.com/yihuaiyuan/learngo/crawler/model"
 )
 
-var profileRe = regexp.MustCompile(`个人资料</div> <div class="m-content-box" data-v-8b1eac0c><div class="purple-btns" data-v-8b1eac0c><div class="m-btn purple" data-v-8b1eac0c>([^<]+)</div><div class="m-btn purple" data-v-8b1eac0c>([\d]+)岁</div><div class="m-btn purple" data-v-8b1eac0c>([^<]+)</div><div class="m-btn purple" data-v-8b1eac0c>([\d]+)cm</div><div class="m-btn purple" data-v-8b1eac0c>([\d]+)kg</div><div class="m-btn purple" data-v-8b1eac0c>工作地:([^<]+)</div><div class="m-btn purple" data-v-8b1eac0c>月收入:([^<]+)</div><div class="m-btn purple" data-v-8b1eac0c>([^<]+)</div><div class="m-btn purple" data-v-8b1eac0c>([^<]+)</div></div> <div class="pink-btns" data-v-8b1eac0c>`)
+var marriageRe = regexp.MustCompile(`<div class="purple-btns" data-v-8b1eac0c><div class="m-btn purple" data-v-8b1eac0c>([^<]+)</div>`)
+var ageRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>([\d]+)岁</div>`)
+var heightRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>([\d]+)cm</div>`)
+var weightRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>([\d]+)kg</div>`)
+var xinzuoRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>([^8b1eac0c]*座[^>]*)</div`)
+var incomeRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>月收入:([^<]+)</div>`)
+var carRe = regexp.MustCompile(`<div class="m-btn pink" data-v-8b1eac0c>([^8b1eac0c]+房)</div>`)
+var houseRe = regexp.MustCompile(`<div class="m-btn pink" data-v-8b1eac0c>([^8b1eac0c]+车)</div>`)
+var jiguanRe = regexp.MustCompile(`<div class="m-btn pink" data-v-8b1eac0c>籍贯:([^>]+)</div>`)
 
 func ParseProfile(contents []byte, gender string, name string) engine.ParseResult {
 	profile := model.Profile{}
 	profile.Name = name
 	profile.Gender = gender
 
-	match := profileRe.FindSubmatch(contents)
-	if match != nil {
-		profile.Marriage = string(match[1])
-		if age, err := strconv.Atoi(string(match[2])); err == nil {
-			profile.Age = age
-		}
-		profile.Xinzuo = string(match[3])
-		if height, err := strconv.Atoi(string(match[4])); err == nil {
-			profile.Height = height
-		}
-		if weight, err := strconv.Atoi(string(match[5])); err == nil {
-			profile.Weight = weight
-		}
-		profile.Hukou = string(match[6])
-		profile.Income = string(match[7])
-		profile.Occupation = string(match[8])
-		profile.Education = string(match[9])
-
+	profile.Marriage = extractString(contents, marriageRe)
+	age, err := strconv.Atoi(extractString(contents, ageRe))
+	if err == nil {
+		profile.Age = age
 	}
+	height, err := strconv.Atoi(extractString(contents, heightRe))
+	if err == nil {
+		profile.Height = height
+	}
+	weight, err := strconv.Atoi(extractString(contents, weightRe))
+	if err == nil {
+		profile.Weight = weight
+	}
+
+	profile.Xinzuo = extractString(contents, xinzuoRe)
+	profile.Income = extractString(contents, incomeRe)
+	profile.Car = extractString(contents, carRe)
+	profile.House = extractString(contents, houseRe)
+	profile.Jiguan = extractString(contents, jiguanRe)
+
 	result := engine.ParseResult{
 		Items: []interface{}{profile},
 	}
 	return result
+}
+
+func extractString(contents []byte, re *regexp.Regexp) string {
+	match := re.FindSubmatch(contents)
+	if len(match) > 1 {
+		return string(match[1])
+	}
+
+	return ""
 }

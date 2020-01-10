@@ -12,7 +12,7 @@ var marriageRe = regexp.MustCompile(`<div class="purple-btns" data-v-8b1eac0c><d
 var ageRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>([\d]+)岁</div>`)
 var heightRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>([\d]+)cm</div>`)
 var weightRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>([\d]+)kg</div>`)
-var xinzuoRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>([^8b1eac0c]*座[^>]*)</div`)
+var xinzuoRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>([^8b1eac0c]*座)[^>]*</div`)
 var incomeRe = regexp.MustCompile(`<div class="m-btn purple" data-v-8b1eac0c>月收入:([^<]+)</div>`)
 var carRe = regexp.MustCompile(`<div class="m-btn pink" data-v-8b1eac0c>([^8b1eac0c]+房)</div>`)
 var houseRe = regexp.MustCompile(`<div class="m-btn pink" data-v-8b1eac0c>([^8b1eac0c]+车)</div>`)

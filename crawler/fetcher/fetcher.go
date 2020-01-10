@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding"
@@ -13,13 +14,18 @@ import (
 	"golang.org/x/text/transform"
 )
 
-func Fetch(url string) ([]byte, error) {
+var rateLimiter = time.Tick(10 * time.Millisecond)
+
+func Fetch(url string, headers map[string]string) ([]byte, error) {
+	<-rateLimiter
 	//访问初始地址
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
-	request.Header.Add("User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Mobile Safari/537.36")
+	for key, value := range headers {
+		request.Header.Add(key, value)
+	}
 	resp, err := http.DefaultClient.Do(request)
 
 	if err != nil {

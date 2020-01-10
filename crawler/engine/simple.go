@@ -6,7 +6,10 @@ import (
 	"github.com/yihuaiyuan/learngo/crawler/fetcher"
 )
 
-func Run(seeds ...Request) {
+type SimpleEngine struct {
+}
+
+func (SimpleEngine) Run(seeds ...Request) {
 
 	var requests []Request
 	for _, r := range seeds {
@@ -33,7 +36,11 @@ func Run(seeds ...Request) {
 
 func worker(r Request) (ParseResult, error) {
 	log.Printf("Fetching %s", r.Url)
-	body, err := fetcher.Fetch(r.Url)
+
+	headers := map[string]string{
+		"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36",
+	}
+	body, err := fetcher.Fetch(r.Url, headers)
 
 	if err != nil {
 		log.Printf("Fetcher url %s error: %v", r.Url, err)

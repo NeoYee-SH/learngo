@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/yihuaiyuan/learngo/crawler/engine"
+	"github.com/yihuaiyuan/learngo/crawler/persist"
 	"github.com/yihuaiyuan/learngo/crawler/scheduler"
 	"github.com/yihuaiyuan/learngo/crawler/zhenai/parser"
 )
@@ -12,6 +13,7 @@ func main() {
 	r := engine.ConcurrentEngine{
 		Scheduler:   &scheduler.QueueScheduler{},
 		WorkerCount: 100,
+		ItemChan:    persist.ItemSaver(),
 	}
 	/*r.Run(engine.Request{
 		Url:       "http://www.zhenai.com/zhenghun",

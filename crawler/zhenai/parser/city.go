@@ -24,7 +24,6 @@ func ParseCity(contents []byte) engine.ParseResult {
 				return ParseProfile(c, gender, name)
 			},
 		})
-		result.Items = append(result.Items, name)
 	}
 
 	matches = cityUrlRe.FindAllSubmatch(contents, -1)
